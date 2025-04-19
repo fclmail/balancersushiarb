@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Polygon Arbitrage Bot</title>
+</head>
+<body>
+  <h2>Polygon Arbitrage Bot</h2>
+  <p><strong>Connected Wallet:</strong> <span id="walletAddress">Not connected</span></p>
+  <p><strong>USDC Balance:</strong> <span id="usdcBalance">0</span></p>
+
+  <label for="tokenAddress">ERC-20 Token Address:</label>
+  <input type="text" id="tokenAddress" placeholder="Enter token address" size="42">
+  <button onclick="executeTrade()">Buy on Balancer → Sell on SushiSwap</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/@ethersproject/providers@5.7.2/lib/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+
+  <script>
+    const usdcAddress = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"; // Polygon USDC
+    const usdcAbi = [
+      "function balanceOf(address) view returns (uint)",
+      "function approve(address spender, uint amount) public returns (bool)"
+    ];
+
+    let provider, signer, walletAddress;
+
+    async function connectWallet() {
+      if (window.ethereum) {
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        signer
