@@ -114,12 +114,18 @@
       const amount = parseFloat(usdcAmountInput);  
       if (!amount || amount <= 0) return setStatus("Enter a valid USDC amount", true);  
 
+      const usdcBal = await getERC20Balance(USDC);  
+      const usdcBalanceAmount = parseFloat(usdcBal);  
+      if (usdcBalanceAmount < amount) {  
+        return setStatus(`Insufficient USDC balance. You have ${usdcBalanceAmount} USDC.`, true);  
+      }  
+
       const sellAmount = (amount * 10 ** 6).toFixed(0);  
       const url = `${ZEROX_API}/swap/v1/quote?sellToken=${USDC}&buyToken=${token}&sellAmount=${sellAmount}&takerAddress=${account}`;  
       const quote = await fetch(url).then(res => res.json());  
 
       if (!quote.to) return setStatus("Buy via Balancer failed: Invalid quote. Check token address or USDC amount.", true);  
-      
+
       const allowance = await getAllowance(USDC, quote.allowanceTarget);  
       if (parseFloat(allowance) < sellAmount) {  
         setStatus("Approving USDC...");  
